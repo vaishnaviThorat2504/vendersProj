@@ -1,0 +1,120 @@
+<h3 class="text-center bg-success">Fill the following details</h3>
+
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-4">
+
+    <div class="row text-center">
+
+        <div class="col-6">
+            <mat-form-field>
+                <input matInput [matDatepicker]="datepicker" formControlName="date">
+                <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+                <mat-datepicker #datepicker></mat-datepicker>
+                <mat-error *ngIf="form.get('date').hasError('required')">Date is required</mat-error>
+            </mat-form-field>
+            <br><br>
+            <mat-form-field>
+                <mat-label>Vendor</mat-label>
+                <mat-select formControlName="vendor">
+                    <mat-option value="TCS">TCS</mat-option>
+                    <mat-option value="Honeywell">Honeywell</mat-option>
+                    <mat-option value="HCL">HCL</mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('vendor').hasError('required')">Vendor is required</mat-error>
+            </mat-form-field>
+            <br><br>
+            <mat-form-field>
+                <mat-label>Rate Card</mat-label>
+                <mat-select formControlName="rateCard">
+                    <mat-option *ngFor="let card of vendorRateService.rateCards$ | async" [value]="card">
+                        {{ card }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('rateCard').hasError('required')">Rate Card is required</mat-error>
+            </mat-form-field>
+            <br><br>
+            <mat-form-field>
+                <input matInput formControlName="rate" placeholder="Rate">
+                <mat-error *ngIf="form.get('rate').hasError('required')">Rate is required</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="col-6">
+            <mat-form-field>
+                <input matInput formControlName="project" placeholder="Project Name">
+                <mat-error *ngIf="form.get('project').hasError('required')">Budget hours are required</mat-error>
+            </mat-form-field>
+            <br><br>
+            <mat-form-field>
+                <input matInput formControlName="budgetHrs" placeholder="Budget Hours">
+                <mat-error *ngIf="form.get('budgetHrs').hasError('required')">Project Name is required</mat-error>
+            </mat-form-field>
+            <br><br>
+            <mat-form-field>
+                <input matInput formControlName="remarks" placeholder="remark">
+                <mat-error *ngIf="form.get('remarks').hasError('required')">remark Name is required</mat-error>
+            </mat-form-field>
+            <br><br>
+
+            <mat-form-field>
+                <mat-select formControlName="status">
+                    <mat-option value="Save">Save</mat-option>
+                    <mat-option value="Submit">Submit</mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('status').hasError('required')">Status is required</mat-error>
+            </mat-form-field>
+        </div>
+    </div>
+    
+    <div class="col-12 text-center">
+        <input type="file" (change)="onFileSelected($event)" formControlName="file"/>
+
+    </div>
+    <br><br>
+    <div class="col-12 text-center">
+        <button type="submit" id="submitButton" [disabled]="form.invalid">Submit</button>
+        <button class="ml-4" type="submit" id="saveButton">Save</button>
+        <button type="button" class="ml-4" *ngIf="!isEditing" (click)="cancel()">Cancel</button>
+        
+        <button class="ml-4" (click)="exportToExcel()">Export to excel</button>
+    </div>
+
+
+</form>
+
+
+<table id="myTable" id="excel-table" class="table table-dark mt-4 text-center">
+    <thead>
+        <tr>
+            <th scope="row">date</th>
+            <th scope="row">vender</th>
+            <th scope="row">rateCard</th>
+            <th scope="row">rate</th>
+            <th scope="row">project</th>
+            <th scope="row">status</th>
+            <th scope="row">budgetHrs</th>
+            <th scope="row">FilePath</th>
+            <th scope="row">remarks</th>
+            <th scope="row">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr scope="row" *ngFor="let data of formData">
+            <td>{{ data.date | date}}</td>
+            <td>{{ data.vendor }}</td>
+            <td>{{ data.rateCard }}</td>
+            <td>{{ data.rate }}</td>
+            <td>{{ data.project }}</td>
+            <td>{{ data.status }}</td>
+            <td>{{ data.budgetHrs }}</td>
+            <td>{{ data.file }}</td>
+            <td>{{ data.remarks }}</td>
+            <td>
+                <button class="btn-primary mr-4" (click)="viewBtn()">View</button>
+                <button class="btn-primary" *ngIf="data.status === 'Save'" (click)="onEditClick()">Edit</button>
+            </td>
+        </tr>
+        <tr>
+           
+    </tbody>
+</table>
